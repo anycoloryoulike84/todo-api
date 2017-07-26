@@ -41,13 +41,13 @@
   Has Happy Hour Now: <input type="checkbox" ng-model="search.happyHour">
   <ul>
     <li ng-repeat="todo in todos | filter: search">	
-      <input type="checkbox" ng-model="todo.happyHour" ng-change="update($index)">
+<!--	// <input type="checkbox" ng-model="todo.happyHour" ng-change="update($index)"> -->
       <a ng-show="!editing[$index]" href="#/{{todo._id}}">{{todo.name}}</a>
       <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
  		<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
  	  
  		  <h3 ng-show="editing[$index]">{{todo.name}}</h3>
- 	   	  <button ng-click="edit($index)">edit</button>
+ 	   	  <button ng-click="edit($index)" ng-show="!editing[$index]">edit</button>
  	   	  <button class="btn-danger" ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
  	        
  	        <form class="form-group" ng-show="editing[$index]" class="form">
@@ -77,7 +77,6 @@
   
 		  <label for="name">  Name:</label>
 		  <input type="text"   class="form-control" ng-model="newTodo">
-
 
 		  <label for="description">Description:</label>
 		  <input type="text"  class="form-control" ng-model="description">
@@ -239,10 +238,10 @@ angular.module('app', ['ngRoute', 'ngResource'])
 		      $location.url('/');
 		    });
 		  }
-		   $scope.remove = function(index){
-			  var todo = $scope.todos[index];
-			  Todos.remove({id: todo._id}, function(){
-			    $scope.todos.splice(index, 1);
+		   
+		   $scope.remove = function(){
+			  Todos.remove({id: $scope.todo._id}, function(){
+			    $location.url('/');
 			  });
 			}
 
@@ -266,27 +265,6 @@ angular.module('app', ['ngRoute', 'ngResource'])
        });
     }]);
     </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
