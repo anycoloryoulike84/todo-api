@@ -8,8 +8,7 @@ var loadingTime = require("./loading_time");
 
 var routes = require('./routes/index');
 var todos = require('./routes/todos');
-
-// var users = require('./routes/users');
+var users = require('./routes/users');
 
 // load mongoose package
 var mongoose = require('mongoose');
@@ -39,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(loadingTime);
 app.use('/', routes);
 app.use('/todos', todos);
-// app.use('/users', users);
+app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

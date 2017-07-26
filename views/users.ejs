@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <title><%= title %></title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+</head>
+<body>
+
+
+<div class="jumbotron"><h1><%= title %></h1>
+<p>A menu app that helps users find what beers are on tap near them, happy hour and specials, prices and profile info about the beer</p><p>Part two will be a beer ordering device allowing users to order the beer. By ordering, a message will be sent to the person pouring beers using NexMo node text messaging service</p></div>
+
+<ng-view></ng-view>
+
+<!-- Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-resource.min.js"></script>
+
+<!-- Template -->
+<script type="text/ng-template" id="/todos.html">
+
+ <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Home</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/todos">Todos</a></li>
+      <li><a href="/create"> create </a></li>
+      <li><a href="/preview"> preview </a></li>
+      <li><a href="/export"> export </a></li>
+    </ul>
+  </div>
+</nav>
+
+  Search Beer Name: <input type="text" ng-model="search.name">
+  <br>
+   Search Beer Type: 
+        <select name="Beer type" ng-model="search.beerType">
+          <option value="search.name">ALL</option>
+          <option value="IPA">IPA</option>
+          <option value="Lager">Lager</option>
+          <option value="SOUR">Sour</option>
+          <option value="ALE">Ale</option>
+          <option value="STOUT">Stout</option>
+          <option value="HEFEWEIZEN">Hefeweizen</option>
+        </select>
+
+
+
+  <br>
+  Has Happy Hour Now: <input type="checkbox" ng-model="search.happyHour">
+  <ul>
+    <li ng-repeat="todo in todos | filter: search"> 
+<!--  // <input type="checkbox" ng-model="todo.happyHour" ng-change="update($index)"> -->
+      <a ng-show="!editing[$index]" href="#/{{todo._id}}">{{todo.name}}</a>
+      <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
+    <span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
+    
+      <h3 ng-show="editing[$index]">{{todo.name}}</h3>
+        <button ng-click="edit($index)" ng-show="!editing[$index]">edit</button>
+        <button class="btn-danger" ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
+          
+          <form class="form-group" ng-show="editing[$index]" class="form">
+          
+          <label for="edit_name">  Name:</label>
+          <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.name">
+
+           <label for="edit_name">  notes:</label>
+          <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.notes">
+    
+          <label ng-show="editing[$index]" for="edit_img">  Description:</label>
+          <input   class="form-control" ng-show="editing[$index]" type="text" ng-model="todo.description">
+    
+          <button ng-show="editing[$index]" ng-click="update($index)">Update</button>
+          <button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
+          <button class="btn-danger" ng-show="editing[$index]" ng-click="remove($index)">remove</button>
+          </form>
+    </li>
+  </ul>
+
+<hr>
+  <button class="btn-primary"  ng-click="showme=true" >Add New Beer </button>
+  <br>
+  <br>
+
+  <div class="form-group" ng-show="showme"> 
+  
+      <label for="name">  Name:</label>
+      <input type="text"   class="form-control" ng-model="newTodo">
+
+      <label for="description">Description:</label>
+      <input type="text"  class="form-control" ng-model="description">
+
+      <label for="brewery">Brewery:</label>
+      <input type="text" class="form-control" ng-model="brewery">
+
+      <label for="beerType">Beer Type:</label>
+      <input type="text" class="form-control" ng-model="beerType">
+
+      <label for="cost">Cost:</label>
+      <input type="number" class="form-control" ng-model="cost">
+
+      <div class="checkbox">
+      <label for="happyHour"><input  type="checkbox" ng-model="happyHour">Happy Hour (T/F): </label>
+      </div>
+
+
+      <button type="button" class="btn btn-success" ng-click="save()">Create</button>
+
+    
+    </div>
+
+
+
+
+
+</script>
+
+<script type="text/ng-template" id="/todoDetails.html">
+
+  <h1>{{ todo.name }}</h1>
+  <h3>{{ todo.beerType }}</h3>
+  <h3> <img ng-src="{{ todo.description }}"></h3>
+
+<form class="form-group">
+
+      <div class="checkbox">
+      <label for="happyHour"><input type="checkbox" ng-model="todo.happyHour">Happy Hour Special:  </label>
+      </div>
+  
+
+
+      <label for="edit_notes">  Notes:</label> 
+      <textarea  class="form-control"  ng-model="todo.notes"></textarea><br><br>
+
+
+      <button ng-click="update()">Update</button>
+      <button class="btn-danger" ng-click="remove()">DELETE</button>
+
+      <a href="/">Cancel</a>
+
+    </form>
+
+  
+
+
+</script>
+
+
+
+
+<!-- 
+
+ANGULAR APP FUNCTIONALITY 
+
+ -->
+
+
+
+
+<script type="text/javascript">
+
+
+
+angular.module('app', ['ngRoute', 'ngResource'])
+
+
+    //---------------
+    // Services
+    //---------------
+
+
+
+
+.factory('Todos', ['$http', function($http){
+  return $http.get('/todos');
+
+}])
+
+.factory('Todos', ['$resource', function($resource){
+          return $resource('/todos/:id', null, {
+            'update': { method:'PUT' }
+          });
+        }])
+
+
+    //---------------
+    // Controllers
+    //---------------
+
+
+
+
+.controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
+          
+          $scope.editing = [];
+          $scope.todos = Todos.query();
+          $scope.date = new Date();
+
+      $scope.save = function(){
+        if(!$scope.newTodo || $scope.newTodo.length < 1) return;
+        
+        var todo = new Todos({ 
+          name: $scope.newTodo, 
+          happyHour: $scope.happyHour, 
+          description: $scope.description,
+          brewery: $scope.brewery,
+          notes: $scope.notes,
+          beerType: $scope.beerType,
+          cost: $scope.cost,
+        });
+
+        todo.$save(function(){
+          $scope.todos.push(todo);
+          $scope.newTodo = ''; // clear textbox
+        });
+      }
+
+      $scope.update = function(index){
+        var todo = $scope.todos[index];
+        Todos.update({id: todo._id}, todo);
+        $scope.editing[index] = false;
+      }
+      $scope.edit = function(index){
+        $scope.editing[index] = angular.copy($scope.todos[index]);
+      }
+      $scope.cancel = function(index){
+        $scope.todos[index] = angular.copy($scope.editing[index]);
+        $scope.editing[index] = false;
+      }
+      $scope.remove = function(index){
+        var todo = $scope.todos[index];
+        Todos.remove({id: todo._id}, function(){
+          $scope.todos.splice(index, 1);
+        });
+      }
+
+
+        }])
+
+
+    .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', '$location', function ($scope, $routeParams, Todos, $location) {
+
+      $scope.todo = Todos.get({id: $routeParams.id });
+
+     $scope.update = function(){
+        Todos.update({id: $scope.todo._id}, $scope.todo, function(){
+          $location.url('/');
+        });
+      }
+       
+       $scope.remove = function(){
+        Todos.remove({id: $scope.todo._id}, function(){
+          $location.url('/');
+        });
+      }
+
+    }])
+
+
+    //---------------
+    // Routes
+    //---------------
+
+    .config(['$routeProvider', function ($routeProvider) {
+      $routeProvider
+        .when('/', {
+          templateUrl: '/todos.html',
+          controller: 'TodoController'
+        })
+
+        .when('/:id', {
+          templateUrl: '/todoDetails.html',
+          controller: 'TodoDetailCtrl'
+       });
+    }]);
+    </script>
+
+
+
