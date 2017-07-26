@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "open http://localhost:3000/ && nodemon ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.17.1",

@@ -6,6 +6,7 @@ var TodoSchema = new mongoose.Schema({
   brewery: String,
   beerType: String,
   cost: Number,
+  notes: String,
   updated_at: { type: Date, default: Date.now },
 });
 module.exports = mongoose.model('todo', TodoSchema);

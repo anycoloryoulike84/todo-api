@@ -21,9 +21,10 @@
 <!-- Template -->
 <script type="text/ng-template" id="/todos.html">
 
-  Name: <input type="text" ng-model="search.name">
+
+  Search Beer Name: <input type="text" ng-model="search.name">
   <br>
-   Beer Type: 
+   Search Beer Type: 
    			<select name="Beer type" ng-model="search.beerType">
 			    <option value="search.name">ALL</option>
 			    <option value="IPA">IPA</option>
@@ -40,15 +41,37 @@
   Has Happy Hour Now: <input type="checkbox" ng-model="search.happyHour">
   <ul>
     <li ng-repeat="todo in todos | filter: search">	
-      <input type="checkbox" ng-model="todo.happyHour">
-      <a href="#/{{todo._id}}">{{todo.name}}</a>
+      <input type="checkbox" ng-model="todo.happyHour" ng-change="update($index)">
+      <a ng-show="!editing[$index]" href="#/{{todo._id}}">{{todo.name}}</a>
       <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
- 	<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
-      
+ 		<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
+ 	  
+ 		  <h3 ng-show="editing[$index]">{{todo.name}}</h3>
+ 	   	  <button ng-click="edit($index)">edit</button>
+ 	   	  <button class="btn-danger" ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
+ 	        
+ 	        <form class="form-group" ng-show="editing[$index]" class="form">
+ 	        
+ 	        <label for="edit_name">  Name:</label>
+ 	        <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.name">
+
+ 	         <label for="edit_name">  notes:</label>
+ 	        <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.notes">
+ 	  
+ 	        <label ng-show="editing[$index]" for="edit_img">  Description:</label>
+ 	        <input   class="form-control" ng-show="editing[$index]" type="text" ng-model="todo.description">
+ 	  
+ 	        <button ng-show="editing[$index]" ng-click="update($index)">Update</button>
+ 	        <button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
+ 	        <button class="btn-danger" ng-show="editing[$index]" ng-click="remove($index)">remove</button>
+ 	        </form>
     </li>
   </ul>
 
-  <button  ng-click="showme=true" >Add New Beer: </button>
+<hr>
+  <button class="btn-primary"  ng-click="showme=true" >Add New Beer </button>
+  <br>
+  <br>
 
 	<div class="form-group" ng-show="showme"> 
   
@@ -82,21 +105,36 @@
 
 
 
-
-
+</script>
 
 <script type="text/ng-template" id="/todoDetails.html">
 
   <h1>{{ todo.name }}</h1>
   <h3>{{ todo.beerType }}</h3>
   <h3> <img ng-src="{{ todo.description }}"></h3>
-  <br>
- 
+
+<form class="form-group">
+
+		  <div class="checkbox">
+			<label for="happyHour"><input type="checkbox" ng-model="todo.happyHour">Happy Hour Special:  </label>
+		  </div>
+  
 
 
-  Happy Hour: <input type="checkbox" ng-model="todo.happyHour">
-  <br>
-  note: <textarea>{{ todo.note }}</textarea>
+		  <label for="edit_notes">  Notes:</label> 
+		  <textarea  class="form-control"  ng-model="todo.notes"></textarea><br><br>
+
+
+		  <button ng-click="update()">Update</button>
+		  <button class="btn-danger" ng-click="remove()">DELETE</button>
+
+		  <a href="/">Cancel</a>
+
+	  </form>
+
+  
+
+
 </script>
 
 
@@ -145,16 +183,20 @@ angular.module('app', ['ngRoute', 'ngResource'])
 
 
 .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
+          
+          $scope.editing = [];
           $scope.todos = Todos.query();
           $scope.date = new Date();
 
 		  $scope.save = function(){
 		    if(!$scope.newTodo || $scope.newTodo.length < 1) return;
+		    
 		    var todo = new Todos({ 
 		    	name: $scope.newTodo, 
 		    	happyHour: $scope.happyHour, 
 		    	description: $scope.description,
 		    	brewery: $scope.brewery,
+		    	notes: $scope.notes,
 		    	beerType: $scope.beerType,
 		    	cost: $scope.cost,
 				});
@@ -164,11 +206,45 @@ angular.module('app', ['ngRoute', 'ngResource'])
 		      $scope.newTodo = ''; // clear textbox
 		    });
 		  }
+
+		  $scope.update = function(index){
+		    var todo = $scope.todos[index];
+		    Todos.update({id: todo._id}, todo);
+		    $scope.editing[index] = false;
+		  }
+		  $scope.edit = function(index){
+		    $scope.editing[index] = angular.copy($scope.todos[index]);
+		  }
+		  $scope.cancel = function(index){
+		    $scope.todos[index] = angular.copy($scope.editing[index]);
+		    $scope.editing[index] = false;
+		  }
+		  $scope.remove = function(index){
+			  var todo = $scope.todos[index];
+			  Todos.remove({id: todo._id}, function(){
+			    $scope.todos.splice(index, 1);
+			  });
+			}
+
+
         }])
 
 
-    .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', function ($scope, $routeParams, Todos) {
+    .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', '$location', function ($scope, $routeParams, Todos, $location) {
+
       $scope.todo = Todos.get({id: $routeParams.id });
+
+		 $scope.update = function(){
+		    Todos.update({id: $scope.todo._id}, $scope.todo, function(){
+		      $location.url('/');
+		    });
+		  }
+		   $scope.remove = function(index){
+			  var todo = $scope.todos[index];
+			  Todos.remove({id: todo._id}, function(){
+			    $scope.todos.splice(index, 1);
+			  });
+			}
 
     }])
 
