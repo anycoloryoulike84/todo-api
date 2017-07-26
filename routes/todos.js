@@ -27,14 +27,16 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/* GET /todos/:id by ID. */
 router.get('/:id', function(req, res, next) {
         // Use 'req.params.name' to return name or 'req.params.id' to return id
-  todo.findById(req.params.name, function (err, post) {
+  todo.findById(req.params.id, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });
 });
 
+// Create new field in doc
 /* POST /todos */
 router.post('/', function(req, res, next) {
   todo.create(req.body, function (err, post) {
@@ -43,6 +45,8 @@ router.post('/', function(req, res, next) {
   });
 });
 
+
+// EDIT field in doc
 /* PUT /todos/:id */
 router.put('/:id', function(req, res, next) {
   todo.findByIdAndUpdate(req.params.id, req.body, function (err, post) {

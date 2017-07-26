@@ -23,8 +23,10 @@
   <br>
    Beer Type: 
    			<select name="Beer type" ng-model="search.beerType">
-			    <option value="name">ALL</option>
+			    <option value="search.name">ALL</option>
 			    <option value="IPA">IPA</option>
+			    <option value="Lager">Lager</option>
+			    <option value="SOUR">Sour</option>
 			    <option value="ALE">Ale</option>
 			    <option value="STOUT">Stout</option>
 			    <option value="HEFEWEIZEN">Hefeweizen</option>
@@ -36,7 +38,7 @@
   Has Happy Hour Now: <input type="checkbox" ng-model="search.happyHour">
   <ul>
     <li ng-repeat="todo in todos | filter: search">	
-      <input type="checkbox" ng-model="todo.completed">
+      <input type="checkbox" ng-model="todo.happyHour">
       <a href="#/{{$index}}">{{todo.name}}</a>
       <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
  	<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
@@ -51,8 +53,10 @@
 
 <script type="text/ng-template" id="/todoDetails.html">
   <h1>{{ todo.name }}</h1>
+  <h3>{{ todo.beerType }}</h3>
+  <h3>{{ todo.description }}</h3>
 
-  completed: <input type="checkbox" ng-model="todo.completed">
+  Happy Hour: <input type="checkbox" ng-model="todo.happyHour">
   note: <textarea>{{ todo.note }}</textarea>
 </script>
 
@@ -70,39 +74,25 @@ angular.module('app', ['ngRoute'])
   return $http.get('/todos');
 }])
 
-      // return [
-      //   { name: 'Duchess', completed: true, beerType: 'IPA', cost:5, note: 'add notes...' },
-      //   { name: 'IPA', completed: true, cost:5, beerType: 'IPA', happyHour: true, note: 'add notes...' },
-      //   { name: 'Lager', completed: true, beerType: 'IPA', note: 'add notes...' },
-      //   { name: 'Lagunitas', completed: true, note: 'add notes...' },
-      //   { name: 'Luponic Distortion', happyHourTime: 1, beerType: 'STOUT', completed: true, note: 'add notes...' },
-      //   { name: 'Saison', completed: false, happyHourTime: 1,cost:23, beerType: 'STOUT', note: 'add notes...' },
-      //   { name: 'Comet Dust', happyHour: true, happyHourTime: 1, beerType: 'HEFEWEIZEN', cost:7, completed: false, note: 'add notes...' },
-      //   { name: 'Watermelon', completed: false, happyHourTime: 1, beerType: 'ALE',  cost:5, note: 'add notes...' },
-      //   { name: 'California Lager', completed: false, cost:5, happyHour: true, beerType: 'HEFEWEIZEN',  note: 'add notes...' },
-      // ];
 
-
-
-
-// if array.every =date.every)
     //---------------
     // Controllers
     //---------------
 
 .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
   Todos.success(function(data){
+
+    // Define Scope JS functionality
     $scope.todos = data;
+    $scope.date = new Date();
+
   }).error(function(data, status){
     console.log(data, status);
     $scope.todos = [];
   });
-}])
-    // .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
-    //   $scope.todos = Todos;
-    //   $scope.date = new Date();
 
-    // }])
+}])
+
 
     .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', function ($scope, $routeParams, Todos) {
       $scope.todo = Todos[$routeParams.id];
