@@ -6,3 +6,10 @@ body {
 a {
   color: #00B7FF;
 }
+
+
+
+h3 > img {
+
+	height: 10em;
+}

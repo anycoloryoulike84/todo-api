@@ -20,6 +20,7 @@
 
 <!-- Template -->
 <script type="text/ng-template" id="/todos.html">
+
   Name: <input type="text" ng-model="search.name">
   <br>
    Beer Type: 
@@ -40,29 +41,82 @@
   <ul>
     <li ng-repeat="todo in todos | filter: search">	
       <input type="checkbox" ng-model="todo.happyHour">
-      <a href="#/{{$index}}">{{todo.name}}</a>
+      <a href="#/{{todo._id}}">{{todo.name}}</a>
       <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
  	<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
       
     </li>
   </ul>
-</script>
+
+  <button  ng-click="showme=true" >Add New Beer: </button>
+
+	<div class="form-group" ng-show="showme"> 
+  
+		  <label for="name">  Name:</label>
+		  <input type="text"   class="form-control" ng-model="newTodo">
+
+
+		  <label for="description">Description:</label>
+		  <input type="text"  class="form-control" ng-model="description">
+
+		  <label for="brewery">Brewery:</label>
+		  <input type="text" class="form-control" ng-model="brewery">
+
+		  <label for="beerType">Beer Type:</label>
+		  <input type="text" class="form-control" ng-model="beerType">
+
+		  <label for="cost">Cost:</label>
+		  <input type="number" class="form-control" ng-model="cost">
+
+		  <div class="checkbox">
+			<label for="happyHour"><input  type="checkbox" ng-model="happyHour">Happy Hour (T/F): </label>
+		  </div>
+
+
+		  <button type="button" class="btn btn-success" ng-click="save()">Create</button>
+
+	  
+	  </div>
+
+
+
 
 
 
 
 
 <script type="text/ng-template" id="/todoDetails.html">
+
   <h1>{{ todo.name }}</h1>
   <h3>{{ todo.beerType }}</h3>
-  <h3>{{ todo.description }}</h3>
+  <h3> <img ng-src="{{ todo.description }}"></h3>
+  <br>
+ 
+
 
   Happy Hour: <input type="checkbox" ng-model="todo.happyHour">
+  <br>
   note: <textarea>{{ todo.note }}</textarea>
 </script>
 
+
+
+
+<!-- 
+
+ANGULAR APP FUNCTIONALITY 
+
+ -->
+
+
+
+
 <script type="text/javascript">
-angular.module('app', ['ngRoute'])
+
+
+
+angular.module('app', ['ngRoute', 'ngResource'])
+
 
     //---------------
     // Services
@@ -73,32 +127,51 @@ angular.module('app', ['ngRoute'])
 
 .factory('Todos', ['$http', function($http){
   return $http.get('/todos');
+
 }])
+
+.factory('Todos', ['$resource', function($resource){
+          return $resource('/todos/:id', null, {
+            'update': { method:'PUT' }
+          });
+        }])
 
 
     //---------------
     // Controllers
     //---------------
 
+
+
+
 .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
-  Todos.success(function(data){
+          $scope.todos = Todos.query();
+          $scope.date = new Date();
 
-    // Define Scope JS functionality
-    $scope.todos = data;
-    $scope.date = new Date();
+		  $scope.save = function(){
+		    if(!$scope.newTodo || $scope.newTodo.length < 1) return;
+		    var todo = new Todos({ 
+		    	name: $scope.newTodo, 
+		    	happyHour: $scope.happyHour, 
+		    	description: $scope.description,
+		    	brewery: $scope.brewery,
+		    	beerType: $scope.beerType,
+		    	cost: $scope.cost,
+				});
 
-  }).error(function(data, status){
-    console.log(data, status);
-    $scope.todos = [];
-  });
-
-}])
+		    todo.$save(function(){
+		      $scope.todos.push(todo);
+		      $scope.newTodo = ''; // clear textbox
+		    });
+		  }
+        }])
 
 
     .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', function ($scope, $routeParams, Todos) {
-      $scope.todo = Todos[$routeParams.id];
+      $scope.todo = Todos.get({id: $routeParams.id });
 
     }])
+
 
     //---------------
     // Routes
