@@ -1,0 +1,112 @@
+
+
+  Search Beer Name: <input type="text" ng-model="search.name">
+  <br>
+   Search Beer Type: 
+   			<select name="Beer type" ng-model="search.beerType">
+			    <option value="search.name">ALL</option>
+			    <option value="IPA">IPA</option>
+			    <option value="Lager">Lager</option>
+			    <option value="SOUR">Sour</option>
+			    <option value="ALE">Ale</option>
+			    <option value="STOUT">Stout</option>
+			    <option value="HEFEWEIZEN">Hefeweizen</option>
+		    </select>
+
+
+
+  <br>
+
+     Search By Bar: 
+   			<select name="Beer type" ng-model="search.beerType">
+			    <option value="Kips">Kips</option>
+			    <option value="Taphaus">Taphaus</option>
+			    <option value="Pappys">Pappy&#39;s</option>
+			    <option value="BearsLairs">Bear&#39;s Lair</option>
+			    <option value="Henrys">Henry&#39;s</option>
+			    <option value="Freehouse">Freehouse</option>
+		    </select> 
+
+
+
+  <br>
+
+  Has Happy Hour Now: <input type="checkbox" ng-model="search.happyHour">
+  <ul class="list-group">
+    <li  class="list-group-item" ng-repeat="todo in todos | filter: search">
+    <span> <img ng-src="{{ todo.description }}"> </span>	
+<!--	// <input type="checkbox" ng-model="todo.happyHour" ng-change="update($index)"> -->
+      <h3><a ng-show="!editing[$index]" href="#/{{todo._id}}">{{todo.name}}</a></h3>
+        
+
+ 	  
+ 		  <h3 ng-show="editing[$index]">{{todo.name}}</h3>
+ 	   	  <button ng-click="edit($index)" ng-show="!editing[$index]">edit</button>
+ 	   	  <button class="btn-danger" ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
+
+ 	   	  <br>
+ 	   	  <br>
+
+ 	   	          <span ng-show="todo.happyHour" style="color:green">Happy Hour Now!   {{date | date: 'EEEE' + ', ' +  'h:mma' }}</span>
+ 		<span ng-if="todo.happyHour" ng-if="todo.happyHourTime" >{{ todo.cost -1 | currency }}</span>
+
+ 	        
+ 	        <form class="form-group" ng-show="editing[$index]" class="form">
+ 	        
+ 	        <label for="edit_name">  Name:</label>
+ 	        <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.name">
+
+ 	         <label for="edit_name">  notes:</label>
+ 	        <input  class="form-control"  ng-show="editing[$index]" type="text" ng-model="todo.notes">
+ 	  
+ 	        <label ng-show="editing[$index]" for="edit_img">  Description:</label>
+ 	        <input   class="form-control" ng-show="editing[$index]" type="text" ng-model="todo.description">
+ 	  
+ 	        <button ng-show="editing[$index]" ng-click="update($index)">Update</button>
+ 	        <button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
+ 	        <button class="btn-danger" ng-show="editing[$index]" ng-click="remove($index)">remove</button>
+ 	        </form>
+    </li>
+  </ul>
+
+<hr>
+
+
+  <br>
+
+
+<button class="btn-primary"  ng-click="showme= !showme " > Add New Beer </button>
+
+
+  <br>
+  <br>
+
+
+	<div class="form-group" ng-show="showme"> 
+  
+		  <label for="name">  Name:</label>
+		  <input type="text"   class="form-control" ng-model="newTodo">
+
+		  <label for="description">Description:</label>
+		  <input type="text"  class="form-control" ng-model="description">
+
+		  <label for="brewery">Brewery:</label>
+		  <input type="text" class="form-control" ng-model="brewery">
+
+		  <label for="beerType">Beer Type:</label>
+		  <input type="text" class="form-control" ng-model="beerType">
+
+		  <label for="cost">Cost:</label>
+		  <input type="number" class="form-control" ng-model="cost">
+
+		  <div class="checkbox">
+			<label for="happyHour"><input  type="checkbox" ng-model="happyHour">Happy Hour (T/F): </label>
+		  </div>
+
+
+		  <button type="button" class="btn btn-success" ng-click="save()">Create</button>
+
+	  
+	  </div>
+
+

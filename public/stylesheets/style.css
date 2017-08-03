@@ -9,7 +9,30 @@ a {
 
 
 
-h3 > img {
+img {
 
 	height: 10em;
+}
+
+li {
+	display: inline-block;
+	width: 20em;
+	float: right;
+	padding: 1em auto;
+	margin: .8em auto
+}
+
+li::after {
+	content: "";
+	clear: both;
+
+}
+
+button.btn-primary.ng-scope{
+
+
+    margin-top: 22em;
+    display: inline-block;
+
+    margin-bottom: 2em;
 }

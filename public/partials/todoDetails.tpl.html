@@ -1,0 +1,26 @@
+
+  <h1>{{ todo.name }}</h1>
+  <h3>{{ todo.beerType }}</h3>
+  <h3> <img ng-src="{{ todo.description }}"></h3>
+
+<form class="form-group">
+
+		  <div class="checkbox">
+			<label for="happyHour"><input type="checkbox" ng-model="todo.happyHour">Happy Hour Special:  </label>
+		  </div>
+  
+
+
+		  <label for="edit_notes">  Notes:</label> 
+		  <textarea  class="form-control"  ng-model="todo.notes"></textarea><br><br>
+
+
+		  <button ng-click="update()">Update</button>
+		  <button class="btn-danger" ng-click="remove()">DELETE</button>
+
+		  <a href="/">Cancel</a>
+
+	  </form>
+
+  
+
